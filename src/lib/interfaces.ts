@@ -3,10 +3,9 @@ export interface Product {
   name: string;
   icon: string;
   description?: string;
-  validate(): boolean;
+  validate?(): boolean; //function type for interface function name, param and return type
 }
 
-// Examples of using a type alias
 type ProductAlias =
   | string
   | number
@@ -15,15 +14,12 @@ type ProductAlias =
       name: string;
       icon: string;
       description?: string;
+      placeOrder?(id: number): boolean; //function type for interface function name, param and return type
     };
 
-let product: ProductAlias = 'Food';
+let prod: ProductAlias = 'new';
 
-// Using a type alias versus an enum
 enum ProductType {
   Sporting,
   Home,
 }
-
-type ProductTypeList = 'SPORTING' | 'HOME';
-let p: ProductTypeList = 'SPORTING';

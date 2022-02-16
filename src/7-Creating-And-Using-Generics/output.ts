@@ -16,7 +16,7 @@ class GenericModel<T extends HasId> {
   }
 
   getItemById(id: number): T | undefined {
-    return this.items ? this.items.find((p) => (id === p.id)) : undefined;
+    return this.items ? this.items.find((p) => id === p.id) : undefined;
   }
 }
 
@@ -144,7 +144,7 @@ async function runTheLearningSamples() {
     }
 
     getItemById(id: number): FoodProduct | undefined {
-      return this.items ? this.items.find((item) => (id === item.id)) : undefined;
+      return this.items ? this.items.find((item) => id === item.id) : undefined;
     }
   }
 
