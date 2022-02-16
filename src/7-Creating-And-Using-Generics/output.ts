@@ -5,7 +5,9 @@ const prefix = '🐉 ';
 interface HasId {
   id: number;
 }
-
+// This is a class using generics, we could use this to create a customer as well as a product
+// Extends hasId is a constraint - a good thing - this tells the class that any type passed to it will have an ID as the class itself doesn't create/assign an id. 
+//  This means an error will be thrown if you pass a type without an ID
 class GenericModel<T extends HasId> {
   public items: T[] | undefined;
   constructor(public url: string) {}
@@ -78,110 +80,82 @@ async function getList<T>(url: string): Promise<T[]> {
 runTheLearningSamples();
 
 async function runTheLearningSamples() {
-  // Reusable code with generics
-  function whatIsIt_number(arg: number): number {
-    return arg;
+  function whatIsIt_number(arg: number) : number {
+    return arg
   }
-
-  console.log(`${prefix} Generics Overview`);
-  console.log(whatIsIt_number(11));
-
-  function whatIsIt_string(arg: string): string {
-    return arg;
+  function whatIsIt_String(arg: string) : string {
+    return arg
   }
-  console.log(whatIsIt_string('john'));
+  console.log(`${prefix} Generics overview`)
+  console.log(whatIsIt_number(20))
+  console.log(whatIsIt_String('John'))
 
-  function whatIsIt_any(arg: any): any {
+  function whatIsIt_Typed<T>(arg: T): T {
     return arg;
-  }
-  console.log(whatIsIt_any(11));
-  console.log(whatIsIt_any('john'));
-
-  function whatIsIt_typed<T>(arg: T): T {
-    return arg;
-  }
-
-  let n: number = whatIsIt_typed<number>(11);
-  let s: string = whatIsIt_typed<string>('john');
-  let b: boolean = whatIsIt_typed<boolean>(true);
-  console.log(n, s, b);
-
-  // generics on functions
-
-  // ~ examine getProducts() and how it returns a Promise<FoodProduct[]>
-  // ~ examine getList() and how it returns a Promise<T[]>
-
+  } //This fxn expects a type passed in as an argument often used as T 
+  let n: number = whatIsIt_Typed<number>(11) //we are telling it we will pass a numnber with <number> tells the function both input and return should be a number
+  let s: string = whatIsIt_Typed<string>('John')
+  let b: boolean = whatIsIt_Typed<boolean>(true)
+  console.log(n, s, b)
   interface Customer {
-    id: number;
-    name: string;
+    id: number,
+    name: string
   }
 
   async function getData() {
-    console.log(`${prefix} Generic Functions`);
-
-    const products = await getList<FoodProduct>(productsURL);
-    console.table(products);
-
+    const products = await getList<FoodProduct>(productsURL);// Examples of using generics with a function
     const customers = await getList<Customer>(customersURL);
-    console.table(customers);
+
+    console.log(`${prefix} Generics overview`)
+    console.table(products)
+    console.table(customers)
   }
-  await getData();
-
-  // generic interface
-
+  await getData()
+//Generic Interface
   interface Model<T> {
     items: T[] | undefined;
     getItems: () => Promise<T[]>;
-    getItemById: (id: number) => T | undefined;
+    getItemsById: (id: number) => T | undefined;
   }
 
   class FoodModel implements Model<FoodProduct> {
-    public items: FoodProduct[] | undefined;
-
-    async getItems(): Promise<FoodProduct[]> {
+   public items: FoodProduct[] | undefined;
+    async getItems() : Promise<FoodProduct[]> {
       this.items = await getList<FoodProduct>(productsURL);
       return this.items;
     }
-
-    getItemById(id: number): FoodProduct | undefined {
-      return this.items ? this.items.find((item) => id === item.id) : undefined;
+    getItemsById(id: number): FoodProduct | undefined {
+      return this.items ? this.items.find((item) => id = item.id) : undefined; 
     }
+    
   }
-
-  const foodModel: FoodModel = new FoodModel();
+// We have created a generic interface that can be used as a Model for T, we could use this Interface to make a  customer class by changing the product stuff to customer stuff. 
+  const foodModel: FoodModel = new FoodModel()
   await foodModel.getItems();
-  console.log(`${prefix} Generic Interface`);
-  console.table(foodModel.items);
-
-  // generic classes
-
-  // see GenericModel<T>
+  console.log(`${prefix} Generic interface`)
+  console.table(foodModel.items)
 
   const genericFoodModel = new GenericModel<FoodProduct>(productsURL);
   const genericCustomerModel = new GenericModel<Customer>(customersURL);
+
   await genericFoodModel.getItems();
   await genericCustomerModel.getItems();
-  console.log(`${prefix} Generic Class`);
-  console.table(genericFoodModel.items);
-  console.table(genericCustomerModel.items);
+// We have just used the same class using generics to create two different instances that share a data structure without needing a second class
 
-  // generic constraints
+  console.log(`${prefix} Generic Class `)
+  console.table(genericFoodModel.items)
+  console.table(genericCustomerModel.items)
 
-  // see GenericModel and how it extends the T ==> class GenericModel<T extends HasId> {}
-
-  // Built-in Constraints
-
-  // ReadOnly<T> constraint
   const model: FoodModel = new FoodModel();
   await model.getItems();
-  const foodItem: Readonly<FoodProduct | undefined> = model.getItemById(10);
-  if (foodItem) {
-    // foodItem.name = 'some name';
-    // foodItem.icon = 'some icon';
-  }
+  const foodItem: Readonly <FoodProduct | undefined> = model.getItemsById(10); //Readonly makes the foodItem object immutable so the if won't work
+  // if (foodItem) {
+  //   foodItem.name = " default "
+  //   foodItem.icon = " some icon "
+  // }
 
-  // Partial<T> constraint
-  const pear = { name: 'pear' };
+  const pear = {name: 'pear'};
   // const pearFood: FoodProduct = pear;
-  const pearFood: Partial<FoodProduct> = pear;
+  const pearFood: Partial<FoodProduct> = pear; // can use parts of the type but does not need all of them, creates a partial instance for when you only have some data and will get the rest later. 
+
 }
